@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数智创新-无尽 - 管理控制台</title>
+<script src="/static/vendor/tailwindcss.js"></script>
+<style type="text/tailwindcss">
+@theme {
+  --color-primary: #0ea5e9;
+  --color-secondary: #8b5cf6;
+  --color-accent: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-dark: #0f172a;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
+@layer utilities {
+  .bg-grid {
+    background-image: 
+      linear-gradient(rgba(14, 165, 233, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  .glass {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .glow-card {
+    transition: all 0.3s ease;
+  }
+  .glow-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px -10px rgba(14, 165, 233, 0.2);
+  }
+  .progress-animate {
+    background: linear-gradient(90deg, rgba(14,165,233,0.8) 0%, rgba(139,92,246,0.8) 50%, rgba(14,165,233,0.8) 100%);
+    background-size: 200% 100%;
+    animation: progressShine 2s linear infinite;
+  }
+  @keyframes progressShine {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  .pulse-dot {
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+}
+</style>
+<style>
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #faf5ff 100%);
+  min-height: 100vh;
+}
+</style>
+</head>
+<body class="font-sans text-slate-800 bg-grid">
+<!-- 导航栏 -->
+<nav class="sticky top-0 z-50 glass border-b border-slate-200/50 px-6 py-4">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <div class="flex items-center gap-6">
+      <a href="/" class="flex items-center gap-2">
+        <div class="h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold">数</div>
+        <span class="text-xl font-bold text-sky-700">数智创新-无尽</span>
+      </a>
+      <div class="hidden md:flex items-center gap-4 text-sm font-medium">
+        <a href="/" class="text-slate-500 hover:text-primary transition-colors">项目列表</a>
+        <a href="/dashboard.html" class="text-primary font-semibold">管理控制台</a>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium">
+        <span class="h-2 w-2 rounded-full bg-accent pulse-dot"></span>
+        服务运行正常
+      </div>
+      <button class="px-4 py-1.5 rounded-lg bg-gradient-to-r from-sky-600 to-violet-600 text-white text-sm font-medium" onclick="window.location.href='/'">
+        返回项目列表
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="max-w-7xl mx-auto px-6 py-8">
+  <!-- 页面标题 -->
+  <div class="mb-8">
+    <h1 class="text-2xl font-bold text-slate-900">管理控制台</h1>
+    <p class="text-slate-600 mt-1">全局渗透任务监控 · 数据报表 · 运行状态总览</p>
+  </div>
+
+  <!-- 核心数据卡片 -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+    <div class="glow-card glass rounded-2xl p-5 border border-slate-200/50">
+      <div class="text-sm text-slate-500 mb-1">总项目数</div>
+      <div class="text-3xl font-bold text-slate-900" id="total-projects">24</div>
+      <div class="text-xs text-accent mt-1">↑ 12% 较上周</div>
+    </div>
+    <div class="glow-card glass rounded-2xl p-5 border border-slate-200/50">
+      <div class="text-sm text-slate-500 mb-1">运行中</div>
+      <div class="text-3xl font-bold text-primary flex items-center gap-2">
+        <span id="running-projects">5</span>
+        <span class="h-2 w-2 rounded-full bg-primary pulse-dot"></span>
+      </div>
+      <div class="text-xs text-slate-500 mt-1">3个排队等待中</div>
+    </div>
+    <div class="glow-card glass rounded-2xl p-5 border border-slate-200/50">
+      <div class="text-sm text-slate-500 mb-1">已完成</div>
+      <div class="text-3xl font-bold text-accent" id="completed-projects">17</div>
+      <div class="text-xs text-slate-500 mt-1">成功率 94%</div>
+    </div>
+    <div class="glow-card glass rounded-2xl p-5 border border-slate-200/50">
+      <div class="text-sm text-slate-500 mb-1">发现漏洞</div>
+      <div class="text-3xl font-bold text-danger" id="total-vulns">142</div>
+      <div class="text-xs text-danger mt-1">高危 38个 · 中危 67个</div>
+    </div>
+    <div class="glow-card glass rounded-2xl p-5 border border-slate-200/50">
+      <div class="text-sm text-slate-500 mb-1">平均渗透耗时</div>
+      <div class="text-3xl font-bold text-secondary" id="avg-time">18<span class="text-lg">分钟</span></div>
+      <div class="text-xs text-slate-500 mt-1">较人工效率提升92%</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <!-- 进行中项目列表 -->
+    <div class="lg:col-span-2 glow-card glass rounded-2xl border border-slate-200/50 overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200/80 flex items-center justify-between">
+        <h2 class="text-lg font-semibold flex items-center gap-2">
+          <span class="w-1 h-5 bg-gradient-to-b from-primary to-secondary rounded-full"></span>
+          进行中项目
+        </h2>
+        <span class="text-xs text-slate-500">自动刷新 每30秒</span>
+      </div>
+      <div class="p-4 space-y-4" id="running-project-list">
+        <!-- 项目1 -->
+        <div class="p-4 rounded-xl bg-white border border-slate-200/60 hover:border-primary/30 transition-colors">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <span class="font-medium text-slate-900">内网核心业务系统渗透测试</span>
+              <span class="ml-2 px-2 py-0.5 rounded-md text-xs bg-primary/10 text-primary">运行中</span>
+            </div>
+            <div class="text-sm text-slate-500">运行 12分42秒</div>
+          </div>
+          <div class="mb-2">
+            <div class="flex justify-between text-xs text-slate-500 mb-1">
+              <span>渗透进度</span>
+              <span>78%</span>
+            </div>
+            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full w-[78%] progress-animate rounded-full"></div>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-xs">
+            <div class="flex gap-3 text-slate-500">
+              <span>已发现资产: 42</span>
+              <span>已获权限: 8台</span>
+              <span>高危漏洞: 3</span>
+            </div>
+            <button class="text-primary hover:text-primary/80 font-medium" onclick="window.location.href='/?project=proj_027'">查看详情 →</button>
+          </div>
+        </div>
+        <!-- 项目2 -->
+        <div class="p-4 rounded-xl bg-white border border-slate-200/60 hover:border-warning/30 transition-colors">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <span class="font-medium text-slate-900">DMZ区外网边界渗透</span>
+              <span class="ml-2 px-2 py-0.5 rounded-md text-xs bg-warning/10 text-warning">长耗时</span>
+            </div>
+            <div class="text-sm text-slate-500">运行 42分18秒</div>
+          </div>
+          <div class="mb-2">
+            <div class="flex justify-between text-xs text-slate-500 mb-1">
+              <span>渗透进度</span>
+              <span>45%</span>
+            </div>
+            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full w-[45%] bg-gradient-to-r from-warning to-orange-500 rounded-full"></div>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-xs">
+            <div class="flex gap-3 text-slate-500">
+              <span>已发现资产: 18</span>
+              <span>已获权限: 2台</span>
+              <span>高危漏洞: 1</span>
+            </div>
+            <button class="text-primary hover:text-primary/80 font-medium" onclick="window.location.href='/?project=proj_028'">查看详情 →</button>
+          </div>
+        </div>
+        <!-- 项目3 -->
+        <div class="p-4 rounded-xl bg-white border border-slate-200/60 hover:border-danger/30 transition-colors">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <span class="font-medium text-slate-900">新上线业务系统安全检测</span>
+              <span class="ml-2 px-2 py-0.5 rounded-md text-xs bg-danger/10 text-danger">Worker失联</span>
+            </div>
+            <div class="text-sm text-slate-500">等待重试</div>
+          </div>
+          <div class="mb-2">
+            <div class="flex justify-between text-xs text-slate-500 mb-1">
+              <span>渗透进度</span>
+              <span>22%</span>
+            </div>
+            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full w-[22%] bg-gradient-to-r from-danger to-red-400 rounded-full"></div>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-xs">
+            <div class="flex gap-3 text-slate-500">
+              <span>已发现资产: 7</span>
+              <span>已获权限: 0台</span>
+              <span>任务自动重试中</span>
+            </div>
+            <button class="text-primary hover:text-primary/80 font-medium" onclick="window.location.href='/?project=proj_029'">查看详情 →</button>
+          </div>
+        </div>
+        <!-- 项目4 -->
+        <div class="p-4 rounded-xl bg-white border border-slate-200/60 hover:border-primary/30 transition-colors">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <span class="font-medium text-slate-900">Redis集群漏洞专项检测</span>
+              <span class="ml-2 px-2 py-0.5 rounded-md text-xs bg-primary/10 text-primary">运行中</span>
+            </div>
+            <div class="text-sm text-slate-500">运行 05分12秒</div>
+          </div>
+          <div class="mb-2">
+            <div class="flex justify-between text-xs text-slate-500 mb-1">
+              <span>渗透进度</span>
+              <span>12%</span>
+            </div>
+            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full w-[12%] progress-animate rounded-full"></div>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-xs">
+            <div class="flex gap-3 text-slate-500">
+              <span>已发现资产: 12</span>
+              <span>端口扫描中</span>
+            </div>
+            <button class="text-primary hover:text-primary/80 font-medium" onclick="window.location.href='/?project=proj_030'">查看详情 →</button>
+          </div>
+        </div>
+        <!-- 项目5 -->
+        <div class="p-4 rounded-xl bg-white border border-slate-200/60 hover:border-slate-300 transition-colors">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <span class="font-medium text-slate-900">云服务器基线检查</span>
+              <span class="ml-2 px-2 py-0.5 rounded-md text-xs bg-slate-100 text-slate-600">排队中</span>
+            </div>
+            <div class="text-sm text-slate-500">预计等待 2分钟</div>
+          </div>
+          <div class="mb-2">
+            <div class="flex justify-between text-xs text-slate-500 mb-1">
+              <span>渗透进度</span>
+              <span>0%</span>
+            </div>
+            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full w-0 rounded-full"></div>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-xs">
+            <div class="flex gap-3 text-slate-500">
+              <span>等待Worker资源分配</span>
+            </div>
+            <button class="text-slate-400 cursor-not-allowed">待启动</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 漏洞类型统计 -->
+    <div class="glow-card glass rounded-2xl border border-slate-200/50 overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200/80 flex items-center justify-between">
+        <h2 class="text-lg font-semibold flex items-center gap-2">
+          <span class="w-1 h-5 bg-gradient-to-b from-danger to-warning rounded-full"></span>
+          漏洞类型统计
+        </h2>
+      </div>
+      <div class="p-5 space-y-4">
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-slate-700">未授权访问/RCE</span>
+            <span class="font-medium text-danger">38</span>
+          </div>
+          <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div class="h-full w-[85%] bg-gradient-to-r from-danger to-red-400 rounded-full"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-slate-700">弱口令/爆破成功</span>
+            <span class="font-medium text-warning">42</span>
+          </div>
+          <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div class="h-full w-[72%] bg-gradient-to-r from-warning to-orange-400 rounded-full"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-slate-700">Web漏洞(SSRF/SQLi/XSS)</span>
+            <span class="font-medium text-yellow-600">35</span>
+          </div>
+          <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div class="h-full w-[55%] bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-full"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-slate-700">信息泄露/配置错误</span>
+            <span class="font-medium text-accent">27</span>
+          </div>
+          <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div class="h-full w-[40%] bg-gradient-to-r from-accent to-emerald-400 rounded-full"></div>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-200/80 mt-6">
+          <h3 class="text-sm font-semibold mb-3 text-slate-800">最近完成项目</h3>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between text-sm">
+              <span class="truncate max-w-[70%]">办公网终端安全渗透</span>
+              <span class="text-accent font-medium">成功 · 21台root</span>
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <span class="truncate max-w-[70%]">测试环境安全评估</span>
+              <span class="text-accent font-medium">成功 · 8个高危</span>
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <span class="truncate max-w-[70%]">API接口安全检测</span>
+              <span class="text-slate-500 font-medium">完成 · 无高危</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 整体结果报表 -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- 渗透成功率趋势 -->
+    <div class="glow-card glass rounded-2xl border border-slate-200/50 overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200/80">
+        <h2 class="text-lg font-semibold flex items-center gap-2">
+          <span class="w-1 h-5 bg-gradient-to-b from-accent to-primary rounded-full"></span>
+          近7天渗透成果趋势
+        </h2>
+      </div>
+      <div class="p-5">
+        <div class="flex items-end justify-between h-48 gap-2">
+          <div class="flex-1 flex flex-col items-center gap-2">
+            <div class="w-full bg-gradient-to-t from-primary to-secondary rounded-t-md" style="height: 65%"></div>
+            <span class="text-xs text-slate-500">7/7</span>
+          </div>
+          <div class="flex-1 flex flex-col items-center gap-2">
+            <div class="w-full bg-gradient-to-t from-primary to-secondary rounded-t-md" style="height: 80%"></div>
+            <span class="text-xs text-slate-500">7/8</span>
+          </div>
+          <div class="flex-1 flex flex-col items-center gap-2">
+            <div class="w-full bg-gradient-to-t from-primary to-secondary rounded-t-md" style="height: 55%"></div>
+            <span class="text-xs text-slate-500">7/9</span>
+          </div>
+          <div class="flex-1 flex flex-col items-center gap-2">
+            <div class="w-full bg-gradient-to-t from-primary to-secondary rounded-t-md" style="height: 90%"></div>
+            <span class="text-xs text-slate-500">7/10</span>
+          </div>
+          <div class="flex-1 flex flex-col items-center gap-2">
+            <div class="w-full bg-gradient-to-t from-primary to-secondary rounded-t-md" style="height: 75%"></div>
+            <span class="text-xs text-slate-500">7/11</span>
+          </div>
+          <div class="flex-1 flex flex-col items-center gap-2">
+            <div class="w-full bg-gradient-to-t from-accent to-emerald-400 rounded-t-md" style="height: 95%"></div>
+            <span class="text-xs text-slate-500">7/12</span>
+          </div>
+          <div class="flex-1 flex flex-col items-center gap-2">
+            <div class="w-full bg-gradient-to-t from-primary to-secondary rounded-t-md" style="height: 85%"></div>
+            <span class="text-xs text-slate-500">7/13</span>
+          </div>
+        </div>
+        <div class="flex justify-between mt-4 pt-4 border-t border-slate-200/80 text-sm">
+          <div>
+            <div class="text-slate-500 text-xs">总完成项目</div>
+            <div class="font-semibold text-slate-900">17个</div>
+          </div>
+          <div>
+            <div class="text-slate-500 text-xs">总发现漏洞</div>
+            <div class="font-semibold text-danger">142个</div>
+          </div>
+          <div>
+            <div class="text-slate-500 text-xs">总权限节点</div>
+            <div class="font-semibold text-accent">89台</div>
+          </div>
+          <div>
+            <div class="text-slate-500 text-xs">平均成功率</div>
+            <div class="font-semibold text-primary">94%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Worker节点状态 -->
+    <div class="glow-card glass rounded-2xl border border-slate-200/50 overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200/80">
+        <h2 class="text-lg font-semibold flex items-center gap-2">
+          <span class="w-1 h-5 bg-gradient-to-b from-secondary to-primary rounded-full"></span>
+          Worker节点状态
+        </h2>
+      </div>
+      <div class="p-5">
+        <div class="grid grid-cols-3 gap-3 mb-6">
+          <div class="text-center p-3 rounded-xl bg-accent/10">
+            <div class="text-2xl font-bold text-accent">8</div>
+            <div class="text-xs text-slate-600">在线节点</div>
+          </div>
+          <div class="text-center p-3 rounded-xl bg-primary/10">
+            <div class="text-2xl font-bold text-primary">5</div>
+            <div class="text-xs text-slate-600">运行中</div>
+          </div>
+          <div class="text-center p-3 rounded-xl bg-slate-100">
+            <div class="text-2xl font-bold text-slate-600">3</div>
+            <div class="text-xs text-slate-600">空闲</div>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-slate-200/60">
+            <div class="flex items-center gap-3">
+              <span class="h-2.5 w-2.5 rounded-full bg-accent pulse-dot"></span>
+              <span class="text-sm">worker-node-01</span>
+            </div>
+            <span class="text-xs text-accent font-medium">运行中 · 内网核心业务系统</span>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-slate-200/60">
+            <div class="flex items-center gap-3">
+              <span class="h-2.5 w-2.5 rounded-full bg-accent pulse-dot"></span>
+              <span class="text-sm">worker-node-02</span>
+            </div>
+            <span class="text-xs text-accent font-medium">运行中 · DMZ区边界渗透</span>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-slate-200/60">
+            <div class="flex items-center gap-3">
+              <span class="h-2.5 w-2.5 rounded-full bg-accent pulse-dot"></span>
+              <span class="text-sm">worker-node-03</span>
+            </div>
+            <span class="text-xs text-accent font-medium">运行中 · Redis专项检测</span>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-slate-200/60">
+            <div class="flex items-center gap-3">
+              <span class="h-2.5 w-2.5 rounded-full bg-warning pulse-dot"></span>
+              <span class="text-sm">worker-node-04</span>
+            </div>
+            <span class="text-xs text-warning font-medium">重启中 · 任务自动重试</span>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-slate-200/60">
+            <div class="flex items-center gap-3">
+              <span class="h-2.5 w-2.5 rounded-full bg-accent pulse-dot"></span>
+              <span class="text-sm">worker-node-05~08</span>
+            </div>
+            <span class="text-xs text-slate-500 font-medium">空闲等待任务</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 页脚 -->
+<footer class="py-6 px-6 mt-8 border-t border-slate-200/50 glass">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+    <div>© 2026 数智创新-无尽 · AI原生安全渗透智能体</div>
+    <div id="footer-date"></div>
+  </div>
+</footer>
+
+<script>
+  // 自动填充当前日期
+  const today = new Date();
+  const dateStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')} · 数智创新-王鑫渊`;
+  document.getElementById('footer-date').textContent = dateStr;
+
+  // 模拟数据自动刷新效果
+  setTimeout(() => {
+    // 这里后续可以对接真实API接口
+    console.log('Dashboard loaded, ready to connect to API');
+  }, 1000);
+</script>
+</body>
+</html>
