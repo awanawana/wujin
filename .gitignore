@@ -1,0 +1,15 @@
+.vscode/
+.DS_Store
+__pycache__/
+.playwright-cli/
+datas/
+dispatch.yaml
+dispatch.yaml
+*.db
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+output/
+check_progress.sh
+.DS_Store
