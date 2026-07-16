@@ -33,10 +33,20 @@
   }
   .glow-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 30px -10px rgba(14, 165, 233, 0.2);
+    box-shadow: 0 12px 30px -10px rgba(14, 165, 233, 0.25);
   }
   .progress-animate {
-    background: linear-gradient(90deg, rgba(14,165,233,0.8) 0%, rgba(139,92,246,0.8) 50%, rgba(14,165,233,0.8) 100%);
+    background: linear-gradient(90deg, rgba(14,165,233,0.9) 0%, rgba(139,92,246,0.9) 50%, rgba(14,165,233,0.9) 100%);
+    background-size: 200% 100%;
+    animation: progressShine 2s linear infinite;
+  }
+  .progress-danger {
+    background: linear-gradient(90deg, rgba(239,68,68,0.9) 0%, rgba(249,115,22,0.9) 50%, rgba(239,68,68,0.9) 100%);
+    background-size: 200% 100%;
+    animation: progressShine 2s linear infinite;
+  }
+  .progress-warning {
+    background: linear-gradient(90deg, rgba(245,158,11,0.9) 0%, rgba(234,179,8,0.9) 50%, rgba(245,158,11,0.9) 100%);
     background-size: 200% 100%;
     animation: progressShine 2s linear infinite;
   }
@@ -50,6 +60,34 @@
   @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
+  }
+  .status-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+  }
+  .status-error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .vuln-high {
+    color: #ef4444;
+    font-weight: 600;
+  }
+  .vuln-medium {
+    color: #f59e0b;
+    font-weight: 600;
+  }
+  .card-glow-blue {
+    box-shadow: 0 0 20px rgba(14, 165, 233, 0.1);
+  }
+  .card-glow-purple {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);
+  }
+  .card-glow-red {
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.1);
   }
 }
 </style>
@@ -79,12 +117,12 @@ body {
       </div>
     </div>
     <div class="flex items-center gap-3">
-      <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium">
-        <span class="h-2 w-2 rounded-full bg-accent pulse-dot"></span>
+      <div class="flex items-center gap-2 px-4 py-1.5 rounded-full status-success text-sm font-semibold">
+        <span class="h-2 w-2 rounded-full bg-white pulse-dot"></span>
         服务运行正常
       </div>
-      <button class="px-4 py-1.5 rounded-lg bg-gradient-to-r from-sky-600 to-violet-600 text-white text-sm font-medium" onclick="window.location.href='/'">
-        返回项目列表
+      <button class="px-4 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-primary hover:text-primary text-slate-700 text-sm font-medium transition-all shadow-sm" onclick="window.location.href='/'">
+        项目列表
       </button>
     </div>
   </div>
@@ -117,10 +155,10 @@ body {
       <div class="text-3xl font-bold text-accent" id="completed-projects">17</div>
       <div class="text-xs text-slate-500 mt-1">成功率 94%</div>
     </div>
-    <div class="glow-card glass rounded-2xl p-5 border border-slate-200/50">
+    <div class="glow-card glass rounded-2xl p-5 border border-slate-200/50 card-glow-red">
       <div class="text-sm text-slate-500 mb-1">发现漏洞</div>
       <div class="text-3xl font-bold text-danger" id="total-vulns">142</div>
-      <div class="text-xs text-danger mt-1">高危 38个 · 中危 67个</div>
+      <div class="text-xs mt-1"><span class="vuln-high">高危 38个</span> · <span class="vuln-medium">中危 67个</span></div>
     </div>
     <div class="glow-card glass rounded-2xl p-5 border border-slate-200/50">
       <div class="text-sm text-slate-500 mb-1">平均渗透耗时</div>
@@ -141,7 +179,7 @@ body {
       </div>
       <div class="p-4 space-y-4" id="running-project-list">
         <!-- 项目1 -->
-        <div class="p-4 rounded-xl bg-white border border-slate-200/60 hover:border-primary/30 transition-colors">
+        <div class="p-4 rounded-xl bg-white border border-slate-200/60 hover:border-primary/30 transition-colors card-glow-blue">
           <div class="flex items-center justify-between mb-2">
             <div>
               <span class="font-medium text-slate-900">内网核心业务系统渗透测试</span>
@@ -162,13 +200,13 @@ body {
             <div class="flex gap-3 text-slate-500">
               <span>已发现资产: 42</span>
               <span>已获权限: 8台</span>
-              <span>高危漏洞: 3</span>
+              <span class="vuln-high">高危: 3</span>
             </div>
             <button class="text-primary hover:text-primary/80 font-medium" onclick="window.location.href='/?project=proj_027'">查看详情 →</button>
           </div>
         </div>
         <!-- 项目2 -->
-        <div class="p-4 rounded-xl bg-white border border-slate-200/60 hover:border-warning/30 transition-colors">
+        <div class="p-4 rounded-xl bg-white border border-slate-200/60 hover:border-warning/30 transition-colors" style="box-shadow: 0 0 15px rgba(245, 158, 11, 0.1);">
           <div class="flex items-center justify-between mb-2">
             <div>
               <span class="font-medium text-slate-900">DMZ区外网边界渗透</span>
@@ -182,20 +220,20 @@ body {
               <span>45%</span>
             </div>
             <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-              <div class="h-full w-[45%] bg-gradient-to-r from-warning to-orange-500 rounded-full"></div>
+              <div class="h-full w-[45%] progress-warning rounded-full"></div>
             </div>
           </div>
           <div class="flex items-center justify-between text-xs">
             <div class="flex gap-3 text-slate-500">
               <span>已发现资产: 18</span>
               <span>已获权限: 2台</span>
-              <span>高危漏洞: 1</span>
+              <span class="vuln-high">高危: 1</span> <span class="vuln-medium">中危: 4</span>
             </div>
             <button class="text-primary hover:text-primary/80 font-medium" onclick="window.location.href='/?project=proj_028'">查看详情 →</button>
           </div>
         </div>
         <!-- 项目3 -->
-        <div class="p-4 rounded-xl bg-white border border-slate-200/60 hover:border-danger/30 transition-colors">
+        <div class="p-4 rounded-xl bg-white border border-slate-200/60 hover:border-danger/30 transition-colors card-glow-red">
           <div class="flex items-center justify-between mb-2">
             <div>
               <span class="font-medium text-slate-900">新上线业务系统安全检测</span>
@@ -209,7 +247,7 @@ body {
               <span>22%</span>
             </div>
             <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-              <div class="h-full w-[22%] bg-gradient-to-r from-danger to-red-400 rounded-full"></div>
+              <div class="h-full w-[22%] progress-danger rounded-full"></div>
             </div>
           </div>
           <div class="flex items-center justify-between text-xs">
@@ -330,7 +368,7 @@ body {
             </div>
             <div class="flex items-center justify-between text-sm">
               <span class="truncate max-w-[70%]">测试环境安全评估</span>
-              <span class="text-accent font-medium">成功 · 8个高危</span>
+              <span class="vuln-high font-medium">成功 · 8个高危</span>
             </div>
             <div class="flex items-center justify-between text-sm">
               <span class="truncate max-w-[70%]">API接口安全检测</span>
@@ -349,7 +387,7 @@ body {
       <div class="px-5 py-4 border-b border-slate-200/80">
         <h2 class="text-lg font-semibold flex items-center gap-2">
           <span class="w-1 h-5 bg-gradient-to-b from-accent to-primary rounded-full"></span>
-          近7天渗透成果趋势
+          近15天渗透成果趋势
         </h2>
       </div>
       <div class="p-5">
