@@ -615,7 +615,7 @@
                           'bg-teal-50 text-teal-700': fact.id === 'origin',
                           'bg-rose-50 text-rose-600': fact.id === 'goal',
                           'bg-brand-50 text-brand-700': fact.id !== 'origin' && fact.id !== 'goal'
-                        }" x-text="fact.id"></span>
+                        }" x-text="factBadgeLabel(fact.id)"></span>
                       <span class="text-[11px] text-slate-400 uppercase tracking-wider">事实</span>
                     </div>
                     <button type="button" @click="removeFactSelection(fact.id)"
@@ -649,7 +649,7 @@
                     'bg-teal-50 text-teal-700': selectedFactId() === 'origin',
                     'bg-rose-50 text-rose-600': selectedFactId() === 'goal',
                     'bg-brand-50 text-brand-700': selectedFactId() !== 'origin' && selectedFactId() !== 'goal'
-                  }" x-text="selectedFactId()"></span>
+                  }" x-text="factBadgeLabel(selectedFactId())"></span>
                 <span class="text-[11px] text-slate-400 font-medium uppercase tracking-wider">事实</span>
               </div>
             </div>
@@ -1197,7 +1197,7 @@ function cairnApp() {
     hintForm: { content: '' },
     reopenForm: { projectId: '', projectTitle: '', description: '' },
     renameForm: { projectId: '', originalTitle: '', title: '' },
-    localPrefs: { actor_name: 'Human', layout_mode: 'dagre_tb' },
+    localPrefs: { actor_name: '人类', layout_mode: 'dagre_tb' },
     settingsForm: { intent_timeout: 5, reason_timeout: 5 },
     deleteConfirm: { id: '', title: '' },
     isDeletingProject: false,
@@ -1310,7 +1310,7 @@ function cairnApp() {
       try {
         const raw = localStorage.getItem('cairn.localPrefs');
         if (!raw) {
-          this.localPrefs.actor_name = 'Human';
+          this.localPrefs.actor_name = '人类';
         } else {
           const parsed = JSON.parse(raw);
           if (typeof parsed.actor_name === 'string') this.localPrefs.actor_name = parsed.actor_name;
@@ -1328,7 +1328,7 @@ function cairnApp() {
       } catch (e) {
         console.error(e);
       }
-      if (!this.localPrefs.actor_name.trim()) this.localPrefs.actor_name = 'Human';
+      if (!this.localPrefs.actor_name.trim()) this.localPrefs.actor_name = '人类';
       if (!this.isValidLayoutMode(this.localPrefs.layout_mode)) this.localPrefs.layout_mode = 'dagre_tb';
       this.layoutMode = this.localPrefs.layout_mode;
     },
@@ -1350,7 +1350,7 @@ function cairnApp() {
     },
 
     actorName() {
-      return this.localPrefs.actor_name.trim() || 'Human';
+      return this.localPrefs.actor_name.trim() || '人类';
     },
 
     projectStatusBadgeClass(status) {
@@ -2095,7 +2095,7 @@ function cairnApp() {
         }));
         const frames = this.buildReplayFrames(sourceProject, baseEvents);
         if (frames.length === 0) {
-          this.showToast('No timeline to replay', 'error');
+          this.showToast('没有可回放的时间线', 'error');
           return;
         }
 
@@ -2206,7 +2206,7 @@ function cairnApp() {
           await this.loadProject(projectId);
           this.updateGraph();
         }
-        this.showToast('Project reopened');
+        this.showToast('项目已重新打开');
       } catch (e) {
         this.showToast(e.message, 'error');
       }
@@ -2614,9 +2614,15 @@ function cairnApp() {
       this.centerGraphOnElements(edges.add(edges.sources()).add(edges.targets()));
     },
 
+    factBadgeLabel(fid) {
+      if (fid === 'origin') return '起点';
+      if (fid === 'goal') return '目标';
+      return fid;
+    },
+
     summarizeFactLabel(fact) {
-      if (fact.id === 'origin') return 'Origin';
-      if (fact.id === 'goal') return 'Goal';
+      if (fact.id === 'origin') return '起点';
+      if (fact.id === 'goal') return '目标';
       const normalized = fact.description.replace(/\s+/g, ' ').trim();
       const chars = Array.from(normalized);
       if (chars.length <= 24) return normalized || fact.id;
@@ -3006,9 +3012,9 @@ function cairnApp() {
 
     selectedIntentPrimaryActionLabel() {
       const intent = this.selectedOpenIntentRecord();
-      if (!intent) return 'Claim';
-      if (!intent.worker) return 'Claim';
-      return intent.worker === this.actorName() ? 'Heartbeat' : 'Claimed';
+      if (!intent) return '认领';
+      if (!intent.worker) return '认领';
+      return intent.worker === this.actorName() ? '心跳' : '已认领';
     },
 
     getFactRecord(fid) {
@@ -3087,7 +3093,7 @@ function cairnApp() {
             const hbAgeSec = (now - hbTime) / 1000;
             const hbAgeStr = hbAgeSec > 60 ? `${Math.round(hbAgeSec/60)}m` : `${Math.round(hbAgeSec)}s`;
             let stateType = 'running';
-            let stateText = `🟢 Running for ${runtimeStr} · hb ${hbAgeStr} ago`;
+            let stateText = `🟢 运行中: 已运行 ${runtimeStr} · ${hbAgeStr}前心跳`;
             
             // Worker每5秒发一次心跳，超过30秒无心跳说明Worker崩溃/API报错/超时
             if (hbAgeSec > 30) {
@@ -3267,7 +3273,7 @@ function cairnApp() {
         exploit_success: entry.success ? '利用成功' : '发现漏洞',
         project_completed: '项目完成',
       };
-      return labels[entry.type] || 'Event';
+      return labels[entry.type] || '事件';
     },
 
     timelineEventBadgeClass(entry) {
@@ -3507,7 +3513,7 @@ function cairnApp() {
         this.newProject = { title:'', origin:'', goal:'', bootstrap: true, hints: [{ content:'' }] };
         await this.loadProjects();
         await this.openProject(data.project.id);
-        this.showToast('Project created');
+        this.showToast('项目已创建');
       } catch(e) { this.showToast(e.message, 'error'); }
     },
 
@@ -3529,7 +3535,7 @@ function cairnApp() {
         this.showIntentModal = false;
         await this.loadProject(this.selectedProjectId);
         this.updateGraph();
-        this.showToast(claim ? 'Intent declared and claimed' : 'Intent declared');
+        this.showToast(claim ? '任务已声明并认领' : '任务已声明');
       } catch(e) { this.showToast(e.message, 'error'); }
     },
 
@@ -3542,7 +3548,7 @@ function cairnApp() {
         await this.api('POST', `/projects/${this.selectedProjectId}/intents/${intent.id}/heartbeat`, { worker: actor });
         await this.loadProject(this.selectedProjectId);
         this.updateGraph();
-        this.showToast(claiming ? 'Intent claimed' : 'Heartbeat sent');
+        this.showToast(claiming ? '任务已认领' : '心跳已发送');
       } catch(e) { this.showToast(e.message, 'error'); }
     },
 
@@ -3554,7 +3560,7 @@ function cairnApp() {
         await this.api('POST', `/projects/${this.selectedProjectId}/intents/${intent.id}/release`, { worker: actor });
         await this.loadProject(this.selectedProjectId);
         this.updateGraph();
-        this.showToast('Intent released');
+        this.showToast('任务已释放');
       } catch(e) { this.showToast(e.message, 'error'); }
     },
 
@@ -3568,7 +3574,7 @@ function cairnApp() {
         this.selectedNode = null;
         await this.loadProject(this.selectedProjectId);
         this.updateGraph();
-        this.showToast('Intent concluded');
+        this.showToast('任务已完成');
       } catch(e) { this.showToast(e.message, 'error'); }
     },
 
@@ -3592,7 +3598,7 @@ function cairnApp() {
         await this.loadProjects();
         await this.loadProject(this.selectedProjectId);
         this.updateGraph();
-        this.showToast('Project completed');
+        this.showToast('项目已完成');
       } catch(e) { this.showToast(e.message, 'error'); }
     },
 
@@ -3606,7 +3612,7 @@ function cairnApp() {
         await this.loadProjects();
         await this.loadProject(this.selectedProjectId);
         this.sideTab = 'hints';
-        this.showToast('Hint added');
+        this.showToast('提示已添加');
       } catch(e) { this.showToast(e.message, 'error'); }
     },
 
@@ -3618,7 +3624,7 @@ function cairnApp() {
         this.saveLocalPrefs();
         if (this.cy) this.cy.layout(this.layoutOpts()).run();
         this.showLocalPrefs = false;
-        this.showToast('Local preferences saved');
+        this.showToast('本地偏好已保存');
       } catch(e) { this.showToast(e.message, 'error'); }
     },
 
@@ -3626,7 +3632,7 @@ function cairnApp() {
       try {
         await this.api('PUT', '/settings', this.settingsForm);
         this.showSettings = false;
-        this.showToast('Server settings saved');
+        this.showToast('服务器设置已保存');
       } catch(e) { this.showToast(e.message, 'error'); }
     },
   };
